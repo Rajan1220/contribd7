@@ -1,0 +1,4 @@
+name = File To Form
+description = This module will convert uploaded file to Form !
+core = 7.x
+version = "7.x-1.0"

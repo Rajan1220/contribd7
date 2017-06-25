@@ -1,0 +1,61 @@
+<?php 
+/**
+ * Implements hook_block_info().
+ */
+function file_to_form_info() {
+  $blocks = array();
+  $blocks['file_to_block'] = array(
+    'info' => t('File To Form'),
+	    /*'status' => 1,
+	    'region' => 'content',*/
+	    'cache' => DRUPAL_NO_CACHE,
+  );
+  
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function file_to_form_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case '':
+      $block['subject'] = t('');
+      $block['content'] = file_to_form_result();
+      break;
+  }
+  return $block;
+}
+
+/**
+ * Implements file_to_form_result().
+ */
+function file_to_form_result() {
+  return theme('file_to_form_result');
+}
+
+
+/*
+ * Implement hook_theme().
+ */
+function file_to_for_theme(){
+  $templates = array(
+    'file_to_form_result' => array(
+      'template' => '/templates/file-to-form-result-template',
+    ),
+  );
+  return $templates;
+}
+/**
+ * Implements hook_preprocess_block().
+ */
+/*function file_to_form_preprocess_block(&$variables) {
+  if ($variables['block']->bid === 'target_block_id') {
+  
+  } 
+  else if ($variables['block']->bid === 'other_target_block_id') {
+  
+  }
+}*/
+?>
