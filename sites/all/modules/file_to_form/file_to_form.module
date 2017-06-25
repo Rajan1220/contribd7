@@ -1,0 +1,36 @@
+<?php 
+/**
+ * Implements hook_block_info().
+ */
+function file_to_form_info() {
+  $blocks = array();
+  $blocks['file_to_block'] = array(
+    'info' => t('File To Block'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function file_to_form_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case '':
+      $block['subject'] = t('File To Form');
+      $block['content'] = file_to_form_result();
+      break;
+  }
+  return $block;
+}
+
+/**
+ * Implements wg_order_message().
+ */
+function file_to_form_result() {
+  
+}
+
+?>
