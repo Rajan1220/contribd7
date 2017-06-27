@@ -8,7 +8,6 @@ function file_to_form_converter_block_info() {
     'info' => t('File To Form Converter'),
 	  'cache' => DRUPAL_NO_CACHE,
   );
-  
   return $blocks;
 }
 
@@ -20,16 +19,21 @@ function file_to_form_converter_block_view($delta = '') {
   switch ($delta) {
     case 'file_to_form_converter':
       $block['subject'] = t('File To Form Converter');
-      $block['content'] = file_to_form_converter_content_form();
+      $block['content'] = file_to_form_converter_content();
       break;
   }
   return $block;
 }
 
 /**
- * Implements file_to_form_result().
+ * Implements file_to_form_converter_content().
  */
-function file_to_form_converter_content_form() {
+function file_to_form_converter_content() {
+  $form = drupal_get_form('file_to_form_converter_form');
+  print drupal_render($form);
+}
+
+function file_to_form_converter_form($form, &$form_state) {
   $form = array();
   $form['file'] = array(
     '#type' => 'file',
@@ -44,7 +48,7 @@ function file_to_form_converter_content_form() {
   return $form;
 }
 
-function file_to_form_converter_content_validate($form, &$form_state) {
+function file_to_form_converter_validate($form, &$form_state) {
   $errors = array();
   $regex = '/\.(' . preg_replace('/ +/', '|', preg_quote($extensions)) . ')$/i';
   if (!preg_match($regex, $file->filename)) {
@@ -62,7 +66,7 @@ function file_to_form_converter_content_validate($form, &$form_state) {
   return $errors;
 }
 
-function file_to_form_converter_content_submit($form, &$form_state) {
+/*function file_to_form_converter_content_submit($form, &$form_state) {
   $file = $form_state['storage']['file'];
     // We are done with the file, remove it from storage.
   unset($form_state['storage']['file']);
@@ -72,7 +76,7 @@ function file_to_form_converter_content_submit($form, &$form_state) {
   file_save($file);
     // Set a response to the user.
   drupal_set_message(t('File uploaded sucessfully !'));
-}
+}*/
 
 /*
  * Implement hook_theme().
