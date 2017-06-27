@@ -1,0 +1,99 @@
+<?php 
+/**
+ * Implements hook_block_info().
+ */
+function file_to_form_converter_block_info() {
+  $blocks = array();
+  $blocks['file_to_block'] = array(
+    'info' => t('File To Form Converter'),
+	  'cache' => DRUPAL_NO_CACHE,
+  );
+  
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function file_to_form_converter_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'file_to_form_converter':
+      $block['subject'] = t('File To Form Converter');
+      $block['content'] = file_to_form_converter_content_form();
+      break;
+  }
+  return $block;
+}
+
+/**
+ * Implements file_to_form_result().
+ */
+function file_to_form_converter_content_form() {
+  $form = array();
+  $form['file'] = array(
+    '#type' => 'file',
+    '#title' => t('Upload File'),
+    '#description' => t('Upload a file, allowed extension: csv'),
+    "#upload_validators"  => array("file_to_form_converter_content_validate" => array("csv")),
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Converet',
+    );
+  return $form;
+}
+
+function file_to_form_converter_content_validate($form, &$form_state) {
+  $errors = array();
+  $regex = '/\.(' . preg_replace('/ +/', '|', preg_quote($extensions)) . ')$/i';
+  if (!preg_match($regex, $file->filename)) {
+    $errors[] = t('Only files with the following extension is allowed: %files-allowed.', array('%files-allowed' => $extensions));
+  }
+  /* Save file to public folder
+  if ($file) {
+        // Move the file, into the Drupal file system
+        if ($file = file_move($file, 'public://')) {
+            // Save the file for use in the submit handler.
+            $form_state['storage']['file'] = $file;
+        } else {
+            form_set_error('file', t('Failed to write the uploaded file to the site\'s file folder.'));
+        }*/
+  return $errors;
+}
+
+function file_to_form_converter_content_submit($form, &$form_state) {
+  $file = $form_state['storage']['file'];
+    // We are done with the file, remove it from storage.
+  unset($form_state['storage']['file']);
+    // Make the storage of the file permanent
+  $file->status = FILE_STATUS_PERMANENT;
+    // Save file status.
+  file_save($file);
+    // Set a response to the user.
+  drupal_set_message(t('File uploaded sucessfully !'));
+}
+
+/*
+ * Implement hook_theme().
+ */
+/*function file_to_form_converter_theme(){
+  $templates = array(
+    'file_to_form_result' => array(
+      'template' => '/templates/file-to-form-result-template',
+    ),
+  );
+  return $templates;
+}*/
+/**
+ * Implements hook_preprocess_block().
+ */
+/*function file_to_form_converter_preprocess_block(&$variables) {
+  if ($variables['block']->bid === 'target_block_id') {
+  
+  } 
+  else if ($variables['block']->bid === 'other_target_block_id') {
+  
+  }
+}*/
+?>
