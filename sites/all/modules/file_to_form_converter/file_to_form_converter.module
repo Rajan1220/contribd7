@@ -4,7 +4,7 @@
  */
 function file_to_form_converter_block_info() {
   $blocks = array();
-  $blocks['file_to_block'] = array(
+  $blocks['file_to_form_converter'] = array(
     'info' => t('File To Form Converter'),
     //'cache' => DRUPAL_NO_CACHE,
   );
@@ -17,7 +17,7 @@ function file_to_form_converter_block_info() {
 function file_to_form_converter_block_view($delta = '') {
   $block = array();
   switch ($delta) {
-    case 'file_to_block':
+    case 'file_to_form_converter':
       $block['subject'] = t('File To Form Converter');
       $block['content'] = drupal_get_form('file_to_form_converter_form');
       break;
