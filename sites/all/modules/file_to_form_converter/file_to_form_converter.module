@@ -41,6 +41,11 @@ function file_to_form_converter_form($form, &$form_state) {
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => 'Converet',
+    '#attributes' => array('onclick' => 'return false;'),
+    '#ajax' => array(
+        'wrapper' => 'form-wrapper',
+        'callback' => 'file_to_form_converter_callback',
+      ) 
     );
   return $form;
 }
@@ -51,26 +56,17 @@ function file_to_form_converter_form_validate($form, &$form_state) {
     'file_validate_extensions' => array('csv'),
   );
 }
-
-function file_to_form_converter_form_submit($form, &$form_state) {
+function file_to_form_converter_callback($form, &$form_state)  {
   $file_fid = $form_state['complete form']['file-to-be-converted']['#file']->fid;
   $file_name = $form_state['complete form']['file-to-be-converted']['#file']->filename;
   $file_type = $form_state['complete form']['file-to-be-converted']['#file']->filemime;
   $file_uri = $form_state['complete form']['file-to-be-converted']['#file']->uri;
   $file_size = $form_state['complete form']['file-to-be-converted']['#file']->filesize;
-  //$contents = fread($handle, filesize($file_name));
-  //$contents = file_get_contents($file_uri);
-  //$data = explode("\r", $contents);
   $file_path = file_create_url($file_uri);
   $file_content = file($file_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-  /*$header = array();
-  $data = array();
-  $rows = array();
-  $output = "";
-  $header = explode(',', $file_content[0]);
-  array_splice($file_content, 0, 1);
-  $output = theme('table', array('header' => $header, 'rows' => 'test'));*/
   print convert_file_to_table($file_path,true);
+}
+function file_to_form_converter_form_submit($form, &$form_state) {
   drupal_set_message(t('File uploaded sucessfully !'));
 }
 
