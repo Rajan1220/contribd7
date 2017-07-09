@@ -38,13 +38,20 @@ function file_to_form_converter_form($form, &$form_state) {
     "#upload_validators"  => array("file_validate_extensions" => array("csv")),
     '#required'=>TRUE,
   );
+  $form['html_div'] = array(
+    '#type' => 'markup',
+    '#prefix' => '<div id="form_wrapper">',
+    '#suffix' => '</div>',
+  );
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => 'Converet',
     '#attributes' => array('onclick' => 'return false;'),
     '#ajax' => array(
-        'wrapper' => 'form-wrapper',
         'callback' => 'file_to_form_converter_callback',
+        'wrapper' => 'form_wrapper',
+        'method' => 'html',
+        
       ) 
     );
   return $form;
@@ -64,7 +71,12 @@ function file_to_form_converter_callback($form, &$form_state)  {
   $file_size = $form_state['complete form']['file-to-be-converted']['#file']->filesize;
   $file_path = file_create_url($file_uri);
   $file_content = file($file_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-  print convert_file_to_table($file_path,true);
+  //print convert_file_to_table($file_path,true);
+  $output = convert_file_to_table($file_path,true);
+  //ajax_command_append('#form_wrapper', $output);
+  $commands[] = ajax_command_append('#form_wrapper', $output);
+  //$page = array('#type' => 'ajax', '#commands' => $commands);
+  return $commands;
 }
 function file_to_form_converter_form_submit($form, &$form_state) {
   drupal_set_message(t('File uploaded sucessfully !'));
