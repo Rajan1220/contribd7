@@ -43,14 +43,17 @@ function file_to_form_converter_form($form, &$form_state) {
     '#prefix' => '<div id="form_wrapper">',
     '#suffix' => '</div>',
   );
+  $form['my_div'] = array(
+    '#markup' => '<div id="myDiv"></div>',
+  );
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => 'Converet',
+    '#value' => 'Convert',
     '#attributes' => array('onclick' => 'return false;'),
     '#ajax' => array(
-        'callback' => 'file_to_form_converter_callback',
         'wrapper' => 'form_wrapper',
-        'method' => 'html',
+        'callback' => 'file_to_form_converter_callback',
+        //'method' => 'html',
         
       ) 
     );
@@ -73,10 +76,12 @@ function file_to_form_converter_callback($form, &$form_state)  {
   $file_content = file($file_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
   //print convert_file_to_table($file_path,true);
   $output = convert_file_to_table($file_path,true);
-  //ajax_command_append('#form_wrapper', $output);
-  $commands[] = ajax_command_append('#form_wrapper', $output);
-  //$page = array('#type' => 'ajax', '#commands' => $commands);
-  return $commands;
+  //$output = 'this is test data';
+  ajax_command_append('#form_wrapper', $output);
+  $commands[] = ajax_command_append('#form_wrapper ', $output);
+  $res = array('#type' => 'ajax', '#commands' => $commands);
+  ajax_deliver($res);
+  //echo '<pre>';print_r($form);die;
 }
 function file_to_form_converter_form_submit($form, &$form_state) {
   drupal_set_message(t('File uploaded sucessfully !'));
