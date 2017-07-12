@@ -58,12 +58,19 @@ function file_to_form_converter_form($form, &$form_state) {
   return $form;
 }
 
+/**
+ * Implements hook_form_validate().
+ */
 function file_to_form_converter_form_validate($form, &$form_state) {
   $validator = array(
     'file_validate_is_image',
     'file_validate_extensions' => array('csv'),
   );
 }
+
+/**
+ * Implements file_to_form_converter_callback().
+ */
 function file_to_form_converter_callback($form, &$form_state)  {
   $file_fid = $form_state['complete form']['file-to-be-converted']['#file']->fid;
   $file_name = $form_state['complete form']['file-to-be-converted']['#file']->filename;
@@ -72,18 +79,29 @@ function file_to_form_converter_callback($form, &$form_state)  {
   $file_size = $form_state['complete form']['file-to-be-converted']['#file']->filesize;
   $file_path = file_create_url($file_uri);
   $file_content = file($file_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-  $output = convert_file_to_table($file_path,true);
+  $output = convert_file_to_table($file_path);
   ajax_command_append('#form_wrapper', $output);
   $commands[] = ajax_command_append('#form_wrapper ', $output);
   $res = array('#type' => 'ajax', '#commands' => $commands);
   ajax_deliver($res);
 }
+
+/**
+ * Implements hook_form_submit().
+ */
 function file_to_form_converter_form_submit($form, &$form_state) {
-  drupal_set_message(t('File uploaded sucessfully !'));
+  //drupal_set_message(t('File uploaded sucessfully !'));
 }
 
-function convert_file_to_table($filename, $head=false) {
-  $handle = fopen($filename, "r");
+/**
+ * Function to read csv file.
+ * @param
+ * $file_path is full path for csv file.
+ * @return
+ * Table using theme(). 
+ */
+function convert_file_to_table($file_path) {
+  $handle = fopen($file_path, "r");
   $all_rows = array();
   $header = null;
   while ($row = fgetcsv($handle)) {
