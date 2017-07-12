@@ -53,8 +53,6 @@ function file_to_form_converter_form($form, &$form_state) {
     '#ajax' => array(
         'wrapper' => 'form_wrapper',
         'callback' => 'file_to_form_converter_callback',
-        //'method' => 'html',
-        
       ) 
     );
   return $form;
@@ -74,51 +72,28 @@ function file_to_form_converter_callback($form, &$form_state)  {
   $file_size = $form_state['complete form']['file-to-be-converted']['#file']->filesize;
   $file_path = file_create_url($file_uri);
   $file_content = file($file_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-  //print convert_file_to_table($file_path,true);
   $output = convert_file_to_table($file_path,true);
-  //$output = 'this is test data';
   ajax_command_append('#form_wrapper', $output);
   $commands[] = ajax_command_append('#form_wrapper ', $output);
   $res = array('#type' => 'ajax', '#commands' => $commands);
   ajax_deliver($res);
-  //echo '<pre>';print_r($form);die;
 }
 function file_to_form_converter_form_submit($form, &$form_state) {
   drupal_set_message(t('File uploaded sucessfully !'));
 }
 
-function convert_file_to_table($filename, $header=false) {
+function convert_file_to_table($filename, $head=false) {
   $handle = fopen($filename, "r");
-  echo '<table>';
-  //display header row if true
-  if ($header) {
-    $csvcontents = fgetcsv($handle);
-    echo '<tr>';
-    foreach ($csvcontents as $headercolumn) {
-      echo "<th>$headercolumn</th>";
+  $all_rows = array();
+  $header = null;
+  while ($row = fgetcsv($handle)) {
+    if ($header === null) {
+      $header = $row;
+      continue;
     }
-    echo '</tr>';
+    $all_rows[] = array_combine($header, $row);
   }
-  // displaying contents
-  while ($csvcontents = fgetcsv($handle)) {
-    echo '<tr>';
-    foreach ($csvcontents as $column) {
-      echo "<td>$column</td>";
-    }
-    echo '</tr>';
-  }
-  echo '</table>';
-  fclose($handle);
+  $table = theme('table', array('header' => $header, 'rows' => $all_rows));
+  return $table;
 }
-/**
- * Implements hook_preprocess_block().
- */
-/*function file_to_form_converter_preprocess_block(&$variables) {
-  if ($variables['block']->bid === 'target_block_id') {
-  
-  } 
-  else if ($variables['block']->bid === 'other_target_block_id') {
-  
-  }
-}*/
 ?>
