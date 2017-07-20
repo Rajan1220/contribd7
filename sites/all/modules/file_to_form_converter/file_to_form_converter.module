@@ -6,7 +6,6 @@ function file_to_form_converter_block_info() {
   $blocks = array();
   $blocks['file_to_form_converter'] = array(
     'info' => t('File To Form Converter'),
-    //'cache' => DRUPAL_NO_CACHE,
   );
   return $blocks;
 }
@@ -114,4 +113,3 @@ function convert_file_to_table($file_path) {
   $table = theme('table', array('header' => $header, 'rows' => $all_rows));
   return $table;
 }
-?>
